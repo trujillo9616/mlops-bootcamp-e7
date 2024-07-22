@@ -1,0 +1,49 @@
+manifest:
+  version: 1.0
+
+automations:
+  estimated_time_to_review:
+    if:
+      - true
+    run:
+      - action: add-label@v1
+        args:
+          label: "{{ calc.etr }} min review"
+          color: {{ colors.red if (calc.etc >= 20) else ( colors.yellow if (calc.etr >= 5) else colors.green ) }}
+
+  safe_changes:
+    if:
+      - {{ is.docs or is.tests or is.asset or is.formatting }}
+    run: 
+      - action: add-label@v1
+        args:
+          label: 'safe-changes'
+      - action: approve@v1
+
+  approve_tests:
+    if:
+      # Triggered for PRs that only include changes to tests
+      - {{ files | allTests }}
+    run: 
+      - action: add-label@v1
+        args:
+          label: 'tests-only'
+      - action: add-comment@v1
+        args:
+          comment: |
+            This merge has been automatically approved because it only contains changes to tests.
+      - action: approve@v1
+
+calc:
+  etr: {{ branch | estimatedReviewTime }}
+
+colors:
+  red: 'b60205'
+  yellow: 'fbca04'
+  green: '0e8a16'
+
+is:
+  docs: {{ files | allDocs }}
+  tests: {{ files | allTests }}
+  asset: {{ files | match(regex=r/\.(png|svg|gif|css)$/) | every }}
+  formatting: {{ source.diff.files | isFormattingChange }}
