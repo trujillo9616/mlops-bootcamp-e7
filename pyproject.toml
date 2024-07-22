@@ -4,17 +4,15 @@ version = "0.1.0"
 description = "Proyecto con implementacion End-to-End de un pipeline de MLOps"
 authors = ["Adrian Trujillo, Hugo Ramirez, Laura Valenzuela, Ricardo Diaz"]
 readme = "README.md"
-packages = [{include = "mlops_bootcamp_e7"}]
+package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.11"
+python = "^3.12"
 ipykernel = "^6.23.2"
+jupyter = "^1.0.0"
 notebook = "^6.5.4"
-pyarrow = "^12.0.1"
 numpy = "^1.24.3"
 pandas = "^2.0.2"
-ipywidgets = "^8.0.6"
-plotnine = "^0.12.1"
 seaborn = "^0.12.2"
 matplotlib = "^3.7.1"
 scikit-learn = "^1.2.2"
