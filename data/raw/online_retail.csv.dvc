@@ -1,0 +1,4 @@
+outs:
+- md5: 0b010f31b58364489e68e4b54d106598
+  size: 45580638
+  path: online_retail.csv

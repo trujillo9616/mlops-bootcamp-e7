@@ -51,7 +51,53 @@ To install any other dependency type
 poetry add <package-name>[@<version>]
 ```
 
+### DVC Data Versioning 💽
 
+DVC (Data Version Control) allows us to version our data, models and other artifacts, without storing them in the git repository (which is not recommended). We will store and track our data to a remote S3 bucket in AWS. To start using DVC as a developer, you have to follow these steps:
+
+1. Install DVC (already installed in the project dependencies with poetry 🎉)
+
+2. Initialize DVC in the project (already done in the project setup 😎)
+
+3. Install AWS CLI and configure it with your credentials. You can follow the instructions in the [official AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html). After you have installed the CLI, you can configure it by running:
+
+```bash
+aws configure
+```
+
+Your credentials will be stored in `~/.aws/credentials` and `~/.aws/config` files. They will be provided by your AWS administrator.
+
+3. Start using DVC with the following commands:
+
+- To get data from the remote storage:
+  
+  ```bash
+  dvc pull
+  ```
+
+- To add a file to DVC:
+
+  ```bash
+  dvc add <file>
+  ```
+
+- To commit changes to DVC:
+
+  ```bash
+  dvc commit
+  ```
+
+- To push changes to the remote storage:
+
+  ```bash
+  dvc push
+  ```
+
+- To reproduce the data (coming soon with pipelines 🚀):
+
+  ```bash
+  dvc repro
+  ```
 
 ## Contact info
 
