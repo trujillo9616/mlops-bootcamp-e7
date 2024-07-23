@@ -1,10 +1,4 @@
-hydra:
-  output_subdir: null  
-  run:
-    dir: .
-
 defaults:
-  - process: process_a
   - model: model_m
   - _self_
 

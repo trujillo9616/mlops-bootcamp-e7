@@ -5,15 +5,17 @@ Author:
 """
 
 import hydra
-from omegaconf import DictConfig
+from hydra.core.config_store import ConfigStore
+from config import OnlineRetailConfig
 
+cs = ConfigStore.instance()
+cs.store(name="online_retail_config", node=OnlineRetailConfig)
 
-@hydra.main(config_path="../config", config_name="main", version_base=None)
-def process_data(config: DictConfig):
+@hydra.main(version_base=None, config_path="../conf", config_name="config")
+def process_data(config: OnlineRetailConfig) -> None:
     """Function to process the data"""
 
-    print(f"Process data using {config.data.raw}")
-    print(f"Columns used: {config.process.use_columns}")
+    print(f"Config data: {config}")
 
 
 if __name__ == "__main__":
