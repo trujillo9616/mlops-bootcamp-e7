@@ -1,11 +1,20 @@
 name: Terraform Plan
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
   pull_request:
     branches:
       - main
     paths:
       - 'terraform/**'
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   terraform:
@@ -48,6 +57,7 @@ jobs:
       run: terraform plan -input=false
 
     - name: Comment on PR
+      if: github.event_name == 'pull_request'
       uses: actions/github-script@v6
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -76,6 +86,9 @@ jobs:
             body: output
           })
 
-
-
+    - name: Terraform Apply
+      id: apply
+      working-directory: ./terraform/infra
+      if: github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
     
