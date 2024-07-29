@@ -76,7 +76,7 @@ jobs:
 
           </details>
 
-          *Pushed by: @${{ github.actor }}`*`;
+          *Pushed by: @${{ github.actor }}*`;
 
           github.rest.issues.createComment({
             issue_number: context.issue.number,
