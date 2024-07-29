@@ -11,8 +11,14 @@ resource "aws_iam_policy_attachment" "dev_policy_attachment" {
   groups     = [aws_iam_group.dev_group.name]
 }
 
+locals {
+  policy_statement_map = {
+    for i, statement in var.policy_statements : i => statement
+  }
+}
+
 data "aws_iam_policy_document" "dev_policy" {
-  for_each = var.policy_statements
+  for_each = local.policy_statement_map
   
   statement {
     effect = each.value.effect
