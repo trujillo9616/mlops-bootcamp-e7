@@ -7,11 +7,11 @@ By: Adrian Trujillo, Hugo Ramirez, Laura Valenzuela, Ricardo Diaz
 ## Project Structure
 ```bash
 .
-├── config                      
+├── config
 │   ├── main.yaml                   # Main configuration file
 │   ├── model                       # Configurations for training model
 │   └── process                     # Configurations for processing data
-├── data            
+├── data
 │   ├── final                       # data after training the model
 │   ├── processed                   # data after processing
 │   ├── raw                         # raw data
@@ -23,7 +23,7 @@ By: Adrian Trujillo, Hugo Ramirez, Laura Valenzuela, Ricardo Diaz
 ├── notebooks                       # Notebooks folder
 ├── .pre-commit-config.yaml         # configurations for pre-commit
 ├── pyproject.toml                  # Poetry dependencies
-├── README.md                       
+├── README.md
 ├── src                             # Main source code
 └── tests                           # Tests code
 ```
@@ -32,7 +32,7 @@ By: Adrian Trujillo, Hugo Ramirez, Laura Valenzuela, Ricardo Diaz
 
 **Before you start**
 
-- Get sure you have `python` with a version `>=3.8`, if you want to start from fresh take a look at [this resource](https://wiki.python.org/moin/BeginnersGuide/Download).
+- Get sure you have `python` with a version `>=3.12`, if you want to start from fresh take a look at [this resource](https://wiki.python.org/moin/BeginnersGuide/Download).
 - Install `poetry` by following the reccomended instructions in [the oficial documentation](https://python-poetry.org/docs/#installation)
 
 ```bash
@@ -70,7 +70,7 @@ Your credentials will be stored in `~/.aws/credentials` and `~/.aws/config` file
 3. Start using DVC with the following commands:
 
 - To get data from the remote storage:
-  
+
   ```bash
   dvc pull
   ```
@@ -98,6 +98,14 @@ Your credentials will be stored in `~/.aws/credentials` and `~/.aws/config` file
   ```bash
   dvc repro
   ```
+
+### Pre-commit hooks 🎣
+
+Pre-commit hooks are a set of actions that are executed before a commit is made. They are used to ensure that the code is clean and follows the project's standards. To install the pre-commit hooks, you have to run the following command:
+
+```bash
+pre-commit install
+```
 
 ## Contact info
 

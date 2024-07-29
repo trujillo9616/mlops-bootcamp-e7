@@ -1,13 +1,28 @@
+default_language_version:
+  python: python3.12
 repos:
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.260"
+  # Pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-toml
+      - id: check-yaml
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: no-commit-to-branch
+
+  # Linting and formatting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.4
     hooks:
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-  - repo: https://github.com/psf/black
-    rev: 23.3.0
-    hooks:
-      - id: black
+        types_or: [ python, pyi, jupyter ]
+        args: [ --fix ]
+      - id: ruff-format
+        types_or: [ python, pyi, jupyter ]
+
+  # Check docs code coverage
   - repo: https://github.com/econchick/interrogate
     rev: 1.5.0
     hooks:
