@@ -57,6 +57,28 @@ jobs:
       continue-on-error: true
       run: terraform plan -input=false -no-color
 
+    - name: Delete Previous Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo
+          });
+
+          const comment = comments.find(comment => comment.user.login === 'github-actions[bot]' && comment.body.includes('Terraform'));
+
+          if (comment) {
+            await github.rest.issues.deleteComment({
+              comment_id: comment.id,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+          }
+
     - name: Comment on PR
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v7
