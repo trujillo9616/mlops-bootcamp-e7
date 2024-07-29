@@ -39,23 +39,23 @@ jobs:
     - name: Terraform Init
       id: init
       working-directory: ./terraform/infra
-      run: terraform init
+      run: terraform init -no-color
 
     - name: Terraform Format
       id: fmt
       working-directory: ./terraform/infra
-      run: terraform fmt -check
+      run: terraform fmt -check -no-color
 
     - name: Terraform Validate
       id: validate
       working-directory: ./terraform/infra
-      run: terraform validate
+      run: terraform validate -no-color
 
     - name: Terraform Plan
       id: plan
       working-directory: ./terraform/infra
       continue-on-error: true
-      run: terraform plan -input=false
+      run: terraform plan -input=false -no-color
 
     - name: Comment on PR
       if: github.event_name == 'pull_request'
