@@ -2,7 +2,7 @@ resource "aws_iam_policy" "dev_policy" {
   name        = var.custom_policy_name
   description = "A custom policy for the dev group"
   path        = "/developers/"
-  policy      = data.aws_iam_policy_document.dev_policy.json
+  policy      = data.aws_iam_policy_document.dev_policy[*].json
 }
 
 resource "aws_iam_policy_attachment" "dev_policy_attachment" {
