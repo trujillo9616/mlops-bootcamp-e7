@@ -6,8 +6,8 @@ module "dev_users" {
       effect  = "Allow"
       actions = ["s3:*"]
       resources = [
-        "arn:aws:s3:::${module.s3_bucket_datalake.bucket_name}",
-        "arn:aws:s3:::${module.s3_bucket_datalake.bucket_name}/*"
+        "arn:aws:s3:::${module.s3_bucket_datalake.s3_bucket_name}",
+        "arn:aws:s3:::${module.s3_bucket_datalake.s3_bucket_name}/*"
       ]
     }
   ]
