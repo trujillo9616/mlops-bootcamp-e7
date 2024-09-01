@@ -40,6 +40,10 @@ def data_load(config_path: Text) -> None:
     df = df[df.UnitPrice > 0]
     logger.info(f"Shape after dropping negative unit price {df.shape}")
 
+    logger.info(f"Shape before dropping negative quantity {df.shape}")
+    df = df[df.Quantity > 0]
+    logger.info(f"Shape after dropping negative quantity {df.shape}")
+
     # add total sales column
     df['Total_sales'] = df['UnitPrice'] * df['Quantity']
 

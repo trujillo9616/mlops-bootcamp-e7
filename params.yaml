@@ -9,3 +9,7 @@ data_load:
 
 featurize:
   features_path: 'data/processed/featured_online_retail.csv'
+
+elbow:
+  graph_path: 'docs/elbow.png'
+

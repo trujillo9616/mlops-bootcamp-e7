@@ -16,7 +16,7 @@ def featurize(config_path: Text) -> None:
 
     logger = get_logger('FEATURIZE', log_level=config['base']['log_level'])
 
-    logger.info('Load raw data')
+    logger.info('Load prepare data')
     data = pd.read_csv(config['data_load']['dataset_prepare'], encoding=config['data_load']['encoding'])
 
     logger.info('Calculate Dates')
