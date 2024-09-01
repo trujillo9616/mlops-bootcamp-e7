@@ -1,0 +1,8 @@
+base:
+  random_state: 42
+  log_level: INFO
+
+data_load:
+  dataset_csv: 'data/raw/online_retail_raw.csv'
+  dataset_prepare: 'data/processed/prepare_online_retail.csv'
+  encoding: 'ISO-8859-1'

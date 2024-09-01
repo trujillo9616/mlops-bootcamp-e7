@@ -1,4 +1,6 @@
 [core]
-    remote = mlops-remote
+    remote = local_remote
 ['remote "mlops-remote"']
     url = s3://mlops-bootcamp-datalake/data
+['remote "local_remote"']
+    url = /tmp/dvc
