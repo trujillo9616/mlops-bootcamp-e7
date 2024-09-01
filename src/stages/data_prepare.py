@@ -40,10 +40,8 @@ def data_load(config_path: Text) -> None:
     df = df[df.UnitPrice > 0]
     logger.info(f"Shape after dropping negative unit price {df.shape}")
 
-    # convert date
-    df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"])
-    logger.info(f"Minimum Invoice Date {min(df["InvoiceDate"])}")
-    logger.info(f"Maximum Invoice Date {max(df["InvoiceDate"])}")
+    # add total sales column
+    df['Total_sales'] = df['UnitPrice'] * df['Quantity']
 
     logger.info('Save processed data')
     df.to_csv(config['data_load']['dataset_prepare'], index=False)

@@ -6,3 +6,6 @@ data_load:
   dataset_csv: 'data/raw/online_retail_raw.csv'
   dataset_prepare: 'data/processed/prepare_online_retail.csv'
   encoding: 'ISO-8859-1'
+
+featurize:
+  features_path: 'data/processed/featured_online_retail.csv'
