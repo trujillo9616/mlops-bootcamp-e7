@@ -55,6 +55,12 @@ def elbow_model(config_path: Text) -> None:
     sns.pointplot(x=list(sse.keys()), y=list(sse.values()))
     plt.savefig(config['elbow']['graph_path'])
 
+    logger.info('Save model')
+    norm_path = config['elbow']['norm_path']
+    rfm_path = config['elbow']['rfm_path']
+    data_norm.to_csv(norm_path, index=False)
+    data_rfm.to_csv(rfm_path, index=False)
+
 if __name__ == '__main__':
 
     args_parser = argparse.ArgumentParser()

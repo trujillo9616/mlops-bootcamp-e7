@@ -12,4 +12,10 @@ featurize:
 
 elbow:
   graph_path: 'docs/elbow.png'
+  norm_path: 'data/processed/norm_online_retail.csv'
+  rfm_path: 'data/processed/rfm_online_retail.csv'
+
+train:
+  graph_path: 'docs/cluster.png'
+  n_clusters: 3
 

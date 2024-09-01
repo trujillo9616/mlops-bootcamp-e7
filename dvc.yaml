@@ -31,3 +31,19 @@ stages:
       - elbow
     outs:
       - docs/elbow.png
+      - data/processed/norm_online_retail.csv
+      - data/processed/rfm_online_retail.csv
+  train:
+    cmd: python -m src.stages.train --config=params.yaml
+    deps:
+      - data/processed/norm_online_retail.csv
+      - data/processed/rfm_online_retail.csv
+      - src/stages/train.py
+    params:
+      - base
+      - data_load
+      - featurize
+      - elbow
+      - train
+    outs:
+      - docs/cluster.png
