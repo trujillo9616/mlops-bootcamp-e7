@@ -1,5 +1,6 @@
 [core]
-    remote = local_remote
+    remote = mlops-remote
+    autostage = true
 ['remote "mlops-remote"']
     url = s3://mlops-bootcamp-datalake/data
 ['remote "local_remote"']
