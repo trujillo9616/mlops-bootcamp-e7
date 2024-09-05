@@ -1,0 +1,113 @@
+schema: '2.0'
+stages:
+  data_prepare:
+    cmd: python -m src.stages.data_prepare --config=params.yaml
+    deps:
+    - path: src/stages/data_prepare.py
+      md5: ea61ef8688e9f898c9c21c8bb06dc9ab
+      size: 1875
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+        data_load:
+          dataset_csv: data/raw/online_retail_raw.csv
+          dataset_prepare: data/processed/prepare_online_retail.csv
+          encoding: ISO-8859-1
+    outs:
+    - path: data/processed/prepare_online_retail.csv
+      md5: b7870f7e3efdec5e5eeb5908d8af2aba
+      size: 36871198
+  featurize:
+    cmd: python -m src.stages.featurize --config=params.yaml
+    deps:
+    - path: data/processed/prepare_online_retail.csv
+      md5: b7870f7e3efdec5e5eeb5908d8af2aba
+      size: 36871198
+    - path: src/stages/featurize.py
+      md5: 9576f540f2dbef9ed20a25a5751e5c0a
+      size: 2776
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+        data_load:
+          dataset_csv: data/raw/online_retail_raw.csv
+          dataset_prepare: data/processed/prepare_online_retail.csv
+          encoding: ISO-8859-1
+        featurize:
+          features_path: data/processed/featured_online_retail.csv
+    outs:
+    - path: data/processed/featured_online_retail.csv
+      md5: 052ea15c3ab11a1ccde4f6903e0bab3e
+      size: 147721
+  elbow:
+    cmd: python -m src.stages.elbow --config=params.yaml
+    deps:
+    - path: data/processed/featured_online_retail.csv
+      md5: 052ea15c3ab11a1ccde4f6903e0bab3e
+      size: 147721
+    - path: src/stages/elbow.py
+      md5: 8208e5206c737cfb9d4b5e6016c0c293
+      size: 2203
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+        data_load:
+          dataset_csv: data/raw/online_retail_raw.csv
+          dataset_prepare: data/processed/prepare_online_retail.csv
+          encoding: ISO-8859-1
+        elbow:
+          graph_path: docs/elbow.png
+          norm_path: data/processed/norm_online_retail.csv
+          rfm_path: data/processed/rfm_online_retail.csv
+        featurize:
+          features_path: data/processed/featured_online_retail.csv
+    outs:
+    - path: data/processed/norm_online_retail.csv
+      md5: be4b3e6bcabaac3cb36138341b24ce60
+      size: 230442
+    - path: data/processed/rfm_online_retail.csv
+      md5: 3c3bad6e60a6a8e28499e8a595e81e60
+      size: 373917
+    - path: docs/elbow.png
+      md5: cea0314b4b1d1bc7f7fa1e365752ccd2
+      size: 30411
+  train:
+    cmd: python -m src.stages.train --config=params.yaml
+    deps:
+    - path: data/processed/norm_online_retail.csv
+      md5: be4b3e6bcabaac3cb36138341b24ce60
+      size: 230442
+    - path: data/processed/rfm_online_retail.csv
+      md5: 3c3bad6e60a6a8e28499e8a595e81e60
+      size: 373917
+    - path: src/stages/train.py
+      md5: 176545b7716172d91871ebec9e8eae74
+      size: 1950
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+        data_load:
+          dataset_csv: data/raw/online_retail_raw.csv
+          dataset_prepare: data/processed/prepare_online_retail.csv
+          encoding: ISO-8859-1
+        elbow:
+          graph_path: docs/elbow.png
+          norm_path: data/processed/norm_online_retail.csv
+          rfm_path: data/processed/rfm_online_retail.csv
+        featurize:
+          features_path: data/processed/featured_online_retail.csv
+        train:
+          graph_path: docs/cluster.png
+          n_clusters: 3
+    outs:
+    - path: docs/cluster.png
+      md5: 14fa6d86b8bb195599081b3bc83973d2
+      size: 265313
