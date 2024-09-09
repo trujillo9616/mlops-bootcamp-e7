@@ -1,0 +1,131 @@
+# -*- mode: yaml -*-
+# +----------------------------------------------------------------------------+
+# | /:\ gitStream: Workflow automation for the code review process.            |
+# +----------------------------------------------------------------------------+
+
+manifest:
+  version: 1.0
+
+# +----------------------------------------------------------------------------+
+# | Automations
+# +----------------------------------------------------------------------------+
+
+automations:
+  # Apply color coded labels to PRs based on the estimated time to review.
+  estimated_time_to_review:
+    if:
+      - true
+    run:
+      - action: add-label@v1
+        args:
+          label: "{{ calc.etr }} min review"
+          color: {{ colors.red if (calc.etr >= 20) else ( colors.yellow if (calc.etr >= 5) else colors.green ) }}
+
+  # Auto approve PRs with safe changes
+  safe_changes:
+    if:
+      - {{ is.docs or is.tests or is.asset or is.formatting }}
+    run: 
+      - action: add-label@v1
+        args:
+          label: 'safe-changes'
+      - action: approve@v1
+
+  # Triggered for PRs that only include changes to tests
+  approve_tests:
+    if:
+      - {{ files | allTests }}
+    run: 
+      - action: add-label@v1
+        args:
+          label: 'tests-only'
+      - action: add-comment@v1
+        args:
+          comment: |
+            This merge has been automatically approved because it only contains changes to tests.
+      - action: approve@v1
+
+  # Triggered for PRs that contain one file and one line.
+  approve_tiny_change:
+    if:
+      - {{ is.one_file and is.one_line }}
+    run:
+      - action: add-label@v1
+        args:
+          label: 'single-line'
+      - action: approve@v1
+      - action: add-comment@v1
+        args:
+          comment: |
+            This PR has been approved because it is only a single line
+
+  # Flag PRs that delete files to highlight potential refactors that need extra scrutiny.
+  flag_deleted_files:
+    if:
+      - {{ has.deleted_files }}
+    run: 
+      - action: add-label@v1
+        args:
+          label: 🗑️ Deleted files
+          color: {{ colors.orange }}
+
+  # Add code reviewer suggestions to PRs when requested with label.
+  add_reviewer_suggestions:
+    if:
+      - {{ has.needs_reviewer_suggestion }}
+    run:
+      - action: explain-code-experts@v1
+        args:
+          gt: 10
+
+  # Add a comment to PRs from first time contributors to welcome them to the project.
+  welcome_first_time_contributor:
+    if:
+      - {{ is.first_time_contributor }}
+    run:
+      - action: add-comment@v1
+        args:
+          comment: |
+            🎉 Welcome, First-Time Contributor! 🎉
+            We noticed that this is your first PR. Thank you for your contribution {{ pr.author }}! 🙌
+            We are excited to have you contributing to {{ repo.name }}, feel free to ask any questions you have. 🚀
+
+
+# +----------------------------------------------------------------------------+
+# | Custom Expressions                                                         |
+# +----------------------------------------------------------------------------+
+
+calc:
+  etr: {{ branch | estimatedReviewTime }}
+
+has:
+  deleted_files: {{ source.diff.files | map(attr='new_file') | match(term='/dev/null') | some }}
+  needs_reviewer_suggestion: {{ pr.labels | match(term='suggest-reviewer') | some }}
+
+changes:
+  # Sum all the lines added in the PR
+  additions: {{ branch.diff.files_metadata | map(attr='additions') | sum }}
+  # Sum all the line removed in the PR
+  deletions: {{ branch.diff.files_metadata | map(attr='deletions') | sum }}
+
+is:
+  first_time_contributor: {{ repo.contributors | isFirstCommit(pr.author) }}
+  docs: {{ files | allDocs }}
+  tests: {{ files | allTests }}
+  asset: {{ files | match(regex=r/\.(png|svg|gif|css)$/) | every }}
+  formatting: {{ source.diff.files | isFormattingChange }}
+  one_file: {{ files | length == 1 }}
+  one_line: {{ changes.additions - changes.deletions <= 1 }}
+
+# These are all of the colors in GitHub's default label color palette.
+colors:
+  red: 'b60205'
+  orange: 'd93f0b'
+  yellow: 'fbca04'
+  green: '0e8a16'
+  blue: '1d76db'
+  purple: '5319e7'
+  docs: {{ files | allDocs }}
+  tests: {{ files | allTests }}
+  asset: {{ files | match(regex=r/\.(png|svg|gif|css)$/) | every }}
+  formatting: {{ source.diff.files | isFormattingChange }}
