@@ -17,5 +17,9 @@ elbow:
 
 train:
   graph_path: 'docs/cluster.png'
-  n_clusters: 3
+  pie_poblacion_graph_path: 'docs/pie_graph_poblacion.png'
+  pie_compras_graph_path: 'docs/pie_graph_compras.png'
+  cluster_path: 'data/final/clustered_online_retail.csv'
+  n_clusters: 4
+  max_iter: 1000
 
