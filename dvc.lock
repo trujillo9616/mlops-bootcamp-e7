@@ -50,8 +50,8 @@ stages:
       md5: 052ea15c3ab11a1ccde4f6903e0bab3e
       size: 147721
     - path: src/stages/elbow.py
-      md5: 8208e5206c737cfb9d4b5e6016c0c293
-      size: 2203
+      md5: 0f1f10ef36404986713429a99bf5bc39
+      size: 3202
     params:
       params.yaml:
         base:
@@ -75,8 +75,8 @@ stages:
       md5: 3c3bad6e60a6a8e28499e8a595e81e60
       size: 373917
     - path: docs/elbow.png
-      md5: cea0314b4b1d1bc7f7fa1e365752ccd2
-      size: 30411
+      md5: b4c2d6d56ab84facb34bcfae3c2bdfe6
+      size: 57496
   train:
     cmd: python -m src.stages.train --config=params.yaml
     deps:
@@ -87,8 +87,8 @@ stages:
       md5: 3c3bad6e60a6a8e28499e8a595e81e60
       size: 373917
     - path: src/stages/train.py
-      md5: 176545b7716172d91871ebec9e8eae74
-      size: 1950
+      md5: 038e642e95bb7708552addc7d5e1c8f8
+      size: 3330
     params:
       params.yaml:
         base:
@@ -106,8 +106,12 @@ stages:
           features_path: data/processed/featured_online_retail.csv
         train:
           graph_path: docs/cluster.png
-          n_clusters: 3
+          pie_poblacion_graph_path: docs/pie_graph_poblacion.png
+          pie_compras_graph_path: docs/pie_graph_compras.png
+          cluster_path: data/final/clustered_online_retail.csv
+          n_clusters: 4
+          max_iter: 1000
     outs:
     - path: docs/cluster.png
-      md5: 14fa6d86b8bb195599081b3bc83973d2
-      size: 265313
+      md5: 0482d2f3ddeebbaa48fa947dd381079c
+      size: 362080
