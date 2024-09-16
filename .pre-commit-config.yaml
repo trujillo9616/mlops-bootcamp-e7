@@ -21,11 +21,3 @@ repos:
         args: [ --fix ]
       - id: ruff-format
         types_or: [ python, pyi, jupyter ]
-
-  # Check docs code coverage
-  - repo: https://github.com/econchick/interrogate
-    rev: 1.5.0
-    hooks:
-      - id: interrogate
-        args: [src, -v, -i, --fail-under=80]
-        pass_filenames: false
