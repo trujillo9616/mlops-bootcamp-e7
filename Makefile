@@ -18,7 +18,7 @@ dependencies_ci:
 
 run_pipeline_ci:
 	@echo "Running pipeline..."
-	export MLFLOW_RUN_ID=`python src/utils/start_pipeline.py --run_name=ci_run_github`; \
+	export MLFLOW_RUN_ID=`python src/utils/start_pipeline.py --run_name=`; \
 	dvc repro
 
 pull_raw_data:

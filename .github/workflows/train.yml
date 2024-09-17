@@ -49,6 +49,9 @@ jobs:
         make pull_raw_data
 
     - name: Run Pipeline
+      env:
+        MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+        MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
       run: |
         source $(poetry env info --path)/bin/activate
         make run_pipeline_ci
