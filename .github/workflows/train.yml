@@ -37,6 +37,10 @@ jobs:
       run: |
         poetry install
 
+    - name: Activate virtualenv
+      run: |
+        source $(poetry env info --path)/bin/activate
+
     - name: Run Pipeline
       run: |
         make run_pipeline_ci
