@@ -30,17 +30,12 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install poetry
-      run: |
-        pip install poetry
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
 
     - name: Install dependencies
       run: |
-        make dependencies
-
-    - name: Install MLFlow
-      run: |
-        pip install mlflow
+        poetry install
 
     - name: Run Pipeline
       run: |
