@@ -38,6 +38,10 @@ jobs:
       run: |
         make dependencies
 
+    - name: Install MLFlow
+      run: |
+        pip install mlflow
+
     - name: Run Pipeline
       run: |
         make run_pipeline_ci
