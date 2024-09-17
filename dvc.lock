@@ -4,8 +4,8 @@ stages:
     cmd: python -m src.stages.data_prepare --config=params.yaml
     deps:
     - path: src/stages/data_prepare.py
-      md5: ea61ef8688e9f898c9c21c8bb06dc9ab
-      size: 1875
+      md5: 296ee5b203bf46b844b447d1d7b98205
+      size: 1106
     params:
       params.yaml:
         base:
@@ -17,17 +17,17 @@ stages:
           encoding: ISO-8859-1
     outs:
     - path: data/processed/prepare_online_retail.csv
-      md5: b7870f7e3efdec5e5eeb5908d8af2aba
-      size: 36871198
+      md5: 6c7b987e0be51e0706c93f544b6d84d2
+      size: 33105281
   featurize:
     cmd: python -m src.stages.featurize --config=params.yaml
     deps:
     - path: data/processed/prepare_online_retail.csv
-      md5: b7870f7e3efdec5e5eeb5908d8af2aba
-      size: 36871198
+      md5: 6c7b987e0be51e0706c93f544b6d84d2
+      size: 33105281
     - path: src/stages/featurize.py
-      md5: 9576f540f2dbef9ed20a25a5751e5c0a
-      size: 2776
+      md5: 2c41773677e4fa3bbe5b9bd2dc57ee90
+      size: 3841
     params:
       params.yaml:
         base:
@@ -41,8 +41,8 @@ stages:
           features_path: data/processed/featured_online_retail.csv
     outs:
     - path: data/processed/featured_online_retail.csv
-      md5: 052ea15c3ab11a1ccde4f6903e0bab3e
-      size: 147721
+      md5: e1388dfdd29210425abdbd217ff3dd36
+      size: 227890
   elbow:
     cmd: python -m src.stages.elbow --config=params.yaml
     deps:
@@ -77,18 +77,38 @@ stages:
     - path: docs/elbow.png
       md5: b4c2d6d56ab84facb34bcfae3c2bdfe6
       size: 57496
+  scaling:
+    cmd: python -m src.stages.data_scaling --config=params.yaml
+    deps:
+    - path: data/processed/featured_online_retail.csv
+      md5: e1388dfdd29210425abdbd217ff3dd36
+      size: 227890
+    - path: src/stages/data_scaling.py
+      md5: 07bd31f165b85cf33f4dd7fbabfb76ba
+      size: 2014
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+        featurize:
+          features_path: data/processed/featured_online_retail.csv
+        scaling:
+          skew_threshold: 0.75
+          norm_path: data/processed/norm_online_retail.csv
+    outs:
+    - path: data/processed/norm_online_retail.csv
+      md5: 83fff7890b35bcc84c14d9226ee05198
+      size: 255704
   train:
     cmd: python -m src.stages.train --config=params.yaml
     deps:
     - path: data/processed/norm_online_retail.csv
-      md5: be4b3e6bcabaac3cb36138341b24ce60
-      size: 230442
-    - path: data/processed/rfm_online_retail.csv
-      md5: 3c3bad6e60a6a8e28499e8a595e81e60
-      size: 373917
+      md5: 83fff7890b35bcc84c14d9226ee05198
+      size: 255704
     - path: src/stages/train.py
-      md5: 038e642e95bb7708552addc7d5e1c8f8
-      size: 3330
+      md5: 0a3e25fedf3111b402f75ea6595a679d
+      size: 3874
     params:
       params.yaml:
         base:
@@ -98,20 +118,61 @@ stages:
           dataset_csv: data/raw/online_retail_raw.csv
           dataset_prepare: data/processed/prepare_online_retail.csv
           encoding: ISO-8859-1
-        elbow:
-          graph_path: docs/elbow.png
+        scaling:
+          skew_threshold: 0.75
           norm_path: data/processed/norm_online_retail.csv
-          rfm_path: data/processed/rfm_online_retail.csv
-        featurize:
-          features_path: data/processed/featured_online_retail.csv
         train:
+          estimator_name: kmeans
+          cluster_path: data/final/clustered_online_retail.csv
+          model_path: models/model.pkl
           graph_path: docs/cluster.png
           pie_poblacion_graph_path: docs/pie_graph_poblacion.png
           pie_compras_graph_path: docs/pie_graph_compras.png
-          cluster_path: data/final/clustered_online_retail.csv
-          n_clusters: 4
+          n_clusters: 3
           max_iter: 1000
     outs:
-    - path: docs/cluster.png
-      md5: 0482d2f3ddeebbaa48fa947dd381079c
-      size: 362080
+    - path: models/model.pkl
+      md5: 8b286d9588bd95818bce9815b31665dd
+      size: 18511
+  evaluate:
+    cmd: python -m src.stages.evaluate --config=params.yaml
+    deps:
+    - path: data/processed/featured_online_retail.csv
+      md5: e1388dfdd29210425abdbd217ff3dd36
+      size: 227890
+    - path: data/processed/norm_online_retail.csv
+      md5: 83fff7890b35bcc84c14d9226ee05198
+      size: 255704
+    - path: models/model.pkl
+      md5: 8b286d9588bd95818bce9815b31665dd
+      size: 18511
+    - path: src/stages/evaluate.py
+      md5: 3319142c463feb6c5374684a2096aa3a
+      size: 2414
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+        data_load:
+          dataset_csv: data/raw/online_retail_raw.csv
+          dataset_prepare: data/processed/prepare_online_retail.csv
+          encoding: ISO-8859-1
+        evaluate:
+          final_path: data/final/final_online_retail.csv
+        scaling:
+          skew_threshold: 0.75
+          norm_path: data/processed/norm_online_retail.csv
+        train:
+          estimator_name: kmeans
+          cluster_path: data/final/clustered_online_retail.csv
+          model_path: models/model.pkl
+          graph_path: docs/cluster.png
+          pie_poblacion_graph_path: docs/pie_graph_poblacion.png
+          pie_compras_graph_path: docs/pie_graph_compras.png
+          n_clusters: 3
+          max_iter: 1000
+    outs:
+    - path: data/final/final_online_retail.csv
+      md5: 666374023718f2484de28d0b958e865b
+      size: 131788

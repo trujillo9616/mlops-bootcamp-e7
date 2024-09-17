@@ -1,10 +1,22 @@
 import argparse
 import pandas as pd
+from datetime import timedelta
 from typing import Text
 import yaml
+import mlflow
 
+from src.utils.mlflow_run_decorator import mlflow_run
 from src.utils.logs import get_logger
+from src.rfm.rfm_scoring import (
+    recency_scoring,
+    frequency_scoring,
+    monetary_scoring,
+    rfm_scoring,
+    categorizer,
+)
 
+
+@mlflow_run
 def featurize(config_path: Text) -> None:
     """Create new features.
     Args:
@@ -14,56 +26,83 @@ def featurize(config_path: Text) -> None:
     with open(config_path) as conf_file:
         config = yaml.safe_load(conf_file)
 
-    logger = get_logger('FEATURIZE', log_level=config['base']['log_level'])
+    logger = get_logger("FEATURIZE", log_level=config["base"]["log_level"])
 
-    logger.info('Load prepare data')
-    data = pd.read_csv(config['data_load']['dataset_prepare'], encoding=config['data_load']['encoding'])
+    logger.info("Load clean data... 💽")
+    df = pd.read_csv(
+        config["data_load"]["dataset_prepare"], encoding=config["data_load"]["encoding"]
+    )
 
-    logger.info('Calculate Dates')
-    # convert date
-    data["InvoiceDate"] = pd.to_datetime(data["InvoiceDate"])
-    logger.info(f"Minimum Invoice Date {min(data["InvoiceDate"])}")
-    logger.info(f"Maximum Invoice Date {max(data["InvoiceDate"])}")
+    df.rename(columns=lambda x: x.lower(), inplace=True)
 
-    analysis_date = data["InvoiceDate"].max() + pd.DateOffset(1)
-    logger.info(f"RFM Analysis Date : {analysis_date}")
+    logger.info("Create new features... 🛠️")
+    df["total_price"] = df["quantity"] * df["unitprice"]
 
-    start_date = analysis_date - pd.DateOffset(days=365)
-    logger.info(f"Start Date when taking 1 year data for analysis : {start_date}")
+    logger.info("Calculate Dates... 📅")
 
-    logger.info('Extract and create features')
-    # Aggregate data on a customer level to get RFM values
-    data_rfm = data[data.InvoiceDate >= start_date].groupby(['CustomerID'], as_index=False).agg(
-        {'InvoiceDate': lambda x: (analysis_date - x.max()).days,
-         'InvoiceNo': 'count', 'Total_sales': 'sum'}).rename(columns={'InvoiceDate': 'Recency',
-                                                                      'InvoiceNo': 'Frequency',
-                                                                      'Total_sales': 'Monetary'})
+    min_invoice_date, max_invoice_date = min(df["invoicedate"]), max(df["invoicedate"])
+    logger.info(f"Minimum Invoice Date: {min_invoice_date}")
+    mlflow.log_param("min_invoice_date", min_invoice_date)
+    logger.info(f"Maximum Invoice Date: {max_invoice_date}")
+    mlflow.log_param("max_invoice_date", max_invoice_date)
 
-    ### Getting individual RFM scores by using quantiles for each of the columns
-    data_rfm['R_score'] = pd.qcut(data_rfm['Recency'], 4, labels=False)
-    data_rfm['F_score'] = pd.qcut(data_rfm['Frequency'], 4, labels=False)
-    data_rfm['M_score'] = pd.qcut(data_rfm['Monetary'], 4, labels=False)
+    df["last_purchase_date"] = df.groupby("customerid")["invoicedate"].transform("max")
+    df["last_purchase_date"] = pd.to_datetime(df["last_purchase_date"]).dt.date
 
-    ### Since a low Recency score means recent transactions and good customer, changine quantile values
-    ### so that low values rank highest ans vice versa
-    data_rfm['R_score'] = 3 - data_rfm['R_score']
+    df["last_purchase_date"] = pd.to_datetime(df["last_purchase_date"])
+    df["invoicedate"] = pd.to_datetime(df["invoicedate"])
 
-    data_rfm['RFM'] = data_rfm.R_score.map(str) \
-                      + data_rfm.F_score.map(str) \
-                      + data_rfm.M_score.map(str)
+    df["ref_date"] = df["invoicedate"].max() + timedelta(days=7)
+    df["ref_date"] = df["ref_date"].dt.date
+    df["ref_date"] = pd.to_datetime(df["ref_date"])
 
-    ### Calculating Final RFM score
-    data_rfm["RFM_Score"] = data_rfm['R_score'] + data_rfm['F_score'] + data_rfm['M_score']
+    df["date"] = pd.to_datetime(df["invoicedate"])
+    df["date"] = df["date"].dt.date
 
-    logger.info('Save features')
-    features_path = config['featurize']['features_path']
-    data_rfm.to_csv(features_path, index=False)
+    ## Calculate Recency
+    logger.info("Calculate Recency... 🔄")
+    customer_recency = pd.DataFrame(df.groupby("customerid", as_index=False).date.max())
+
+    df["customer_recency"] = df["ref_date"] - df["last_purchase_date"]
+    df["recency2"] = pd.to_numeric(df["customer_recency"].dt.days.astype("int64"))
+
+    customer_recency = df.groupby("customerid", as_index=False)["recency2"].mean()
+    customer_recency.rename(columns={"recency2": "recency"}, inplace=True)
+    df.drop(["last_purchase_date"], axis=1, inplace=True)
+
+    ## Calculate Frequency
+    logger.info("Calculate Frequency... 📈")
+    customer_frequency = df.groupby("customerid", as_index=False)["invoiceno"].nunique()
+    customer_frequency.rename(columns={"invoiceno": "frequency"}, inplace=True)
+
+    ## Calculate Monetary
+    logger.info("Calculate Monetary... 💵")
+    customer_monetary = df.groupby("customerid", as_index=False)["total_price"].sum()
+    customer_monetary.rename(columns={"total_price": "monetary"}, inplace=True)
+
+    ## Merge all the dataframes
+    customer_rfm = pd.merge(
+        pd.merge(customer_recency, customer_frequency, on="customerid"),
+        customer_monetary,
+        on="customerid",
+    )
+
+    ## Calculate RFM scores
+    logger.info("Calculate RFM scores... 🎯")
+    customer_rfm["recency_score"] = customer_rfm.apply(recency_scoring, axis=1)
+    customer_rfm["frequency_score"] = customer_rfm.apply(frequency_scoring, axis=1)
+    customer_rfm["monetary_score"] = customer_rfm.apply(monetary_scoring, axis=1)
+
+    customer_rfm["rfm"] = customer_rfm.apply(rfm_scoring, axis=1)
+    customer_rfm["rfm_category"] = customer_rfm["rfm"].apply(categorizer)
+
+    features_path = config["featurize"]["features_path"]
+    customer_rfm.to_csv(features_path, index=False)
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument('--config', dest='config', required=True)
+    args_parser.add_argument("--config", dest="config", required=True)
     args = args_parser.parse_args()
 
     featurize(config_path=args.config)

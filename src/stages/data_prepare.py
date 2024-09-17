@@ -6,8 +6,10 @@ import yaml
 
 from src.data_preprocess.clean_data import clean_data
 from src.utils.logs import get_logger
+from src.utils.mlflow_run_decorator import mlflow_run
 
 
+@mlflow_run
 def data_prepare(config_path: Text) -> None:
     """Load raw data.
     Args:
@@ -27,11 +29,8 @@ def data_prepare(config_path: Text) -> None:
     logger.info("Cleaning data... 🧹")
     df_clean = clean_data(df)
 
-    # Add TotalPrice column
-    df_clean["TotalPrice"] = df_clean["UnitPrice"] * df["Quantity"]
-
-    logger.info("Save processed data... 💾")
-    df.to_csv(config["data_load"]["dataset_prepare"], index=False)
+    logger.info("Save preprocessed data... 💾")
+    df_clean.to_csv(config["data_load"]["dataset_prepare"], index=False)
 
 
 if __name__ == "__main__":

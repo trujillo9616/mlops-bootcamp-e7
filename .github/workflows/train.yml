@@ -1,0 +1,67 @@
+name: ML Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  mlops:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install poetry
+      run: |
+        pip install poetry
+
+    - name: Install dependencies
+      run: |
+        make dependencies
+
+    - name: Run Pipeline
+      run: |
+        make run_pipeline_ci
+
+    - name: Read Results
+      id: results
+      uses: jaywcjlove/github-action-read-file@main
+      with:
+        path: data/final/results.txt
+
+    - name: Comment Results on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `
+          #### MLOps Pipeline Execution 🚀\
+          `${{ steps.results.outputs.content }}\`
+          *Pushed by: @${{ github.actor }}*`;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })

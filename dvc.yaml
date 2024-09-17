@@ -19,31 +19,41 @@ stages:
     - featurize
     outs:
     - data/processed/featured_online_retail.csv
-  elbow:
-    cmd: python -m src.stages.elbow --config=params.yaml
+  scaling:
+    cmd: python -m src.stages.data_scaling --config=params.yaml
     deps:
-      - data/processed/featured_online_retail.csv
-      - src/stages/elbow.py
+    - data/processed/featured_online_retail.csv
+    - src/stages/data_scaling.py
     params:
-      - base
-      - data_load
-      - featurize
-      - elbow
+    - base
+    - featurize
+    - scaling
     outs:
-      - docs/elbow.png
-      - data/processed/norm_online_retail.csv
-      - data/processed/rfm_online_retail.csv
+    - data/processed/norm_online_retail.csv
   train:
     cmd: python -m src.stages.train --config=params.yaml
     deps:
       - data/processed/norm_online_retail.csv
-      - data/processed/rfm_online_retail.csv
       - src/stages/train.py
     params:
       - base
       - data_load
-      - featurize
-      - elbow
+      - scaling
       - train
     outs:
-      - docs/cluster.png
+      - models/model.pkl
+  evaluate:
+    cmd: python -m src.stages.evaluate --config=params.yaml
+    deps:
+    - data/processed/norm_online_retail.csv
+    - data/processed/featured_online_retail.csv
+    - models/model.pkl
+    - src/stages/evaluate.py
+    params:
+    - base
+    - data_load
+    - scaling
+    - train
+    - evaluate
+    outs:
+    - data/final/final_online_retail.csv
