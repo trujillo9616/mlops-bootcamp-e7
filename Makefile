@@ -21,6 +21,10 @@ run_pipeline_ci:
 	export MLFLOW_RUN_ID=`python src/utils/start_pipeline.py --run_name=ci_run_github`; \
 	dvc repro
 
+pull_raw_data:
+	@echo "Pulling raw data..."
+	dvc pull data/raw/online_retail_raw.csv
+
 env: dependencies
 	@echo "Activating virtual environment..."
 	poetry shell
