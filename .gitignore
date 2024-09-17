@@ -94,3 +94,6 @@ outputs
 
 # Terraform
 **/.terraform/
+
+# MLFlow
+mlruns/

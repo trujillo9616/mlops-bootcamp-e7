@@ -10,16 +10,24 @@ data_load:
 featurize:
   features_path: 'data/processed/featured_online_retail.csv'
 
+scaling:
+  skew_threshold: 0.75
+  norm_path: 'data/processed/norm_online_retail.csv'
+
 elbow:
   graph_path: 'docs/elbow.png'
   norm_path: 'data/processed/norm_online_retail.csv'
   rfm_path: 'data/processed/rfm_online_retail.csv'
 
 train:
+  estimator_name: 'kmeans'
+  cluster_path: 'data/final/clustered_online_retail.csv'
+  model_path: 'models/model.pkl'
   graph_path: 'docs/cluster.png'
   pie_poblacion_graph_path: 'docs/pie_graph_poblacion.png'
   pie_compras_graph_path: 'docs/pie_graph_compras.png'
-  cluster_path: 'data/final/clustered_online_retail.csv'
-  n_clusters: 4
+  n_clusters: 3
   max_iter: 1000
 
+evaluate:
+  final_path: 'data/final/final_online_retail.csv'
