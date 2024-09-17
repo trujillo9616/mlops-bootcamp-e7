@@ -39,4 +39,5 @@ jobs:
 
     - name: Run Pipeline
       run: |
+        source $(poetry env info --path)/bin/activate
         make run_pipeline_ci
