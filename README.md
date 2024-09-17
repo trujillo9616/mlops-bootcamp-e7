@@ -2,7 +2,7 @@
 
 Proyecto con implementacion End-to-End de un pipeline de MLOps
 
-By: Adrian Trujillo, Hugo Ramirez, Laura Valenzuela, Ricardo Diaz
+By: Adrian Trujillo, Ricardo Diaz
 
 ## Project Structure
 ```bash
@@ -32,7 +32,7 @@ By: Adrian Trujillo, Hugo Ramirez, Laura Valenzuela, Ricardo Diaz
 
 **Before you start**
 
-- Get sure you have `python` with a version `>=3.12`, if you want to start from fresh take a look at [this resource](https://wiki.python.org/moin/BeginnersGuide/Download).
+- Get sure you have `python` with a version `>=3.10`, if you want to start from fresh take a look at [this resource](https://wiki.python.org/moin/BeginnersGuide/Download).
 - Install `poetry` by following the reccomended instructions in [the oficial documentation](https://python-poetry.org/docs/#installation)
 
 ```bash
@@ -109,4 +109,4 @@ pre-commit install
 
 ## Contact info
 
-Adrian Trujillo, Hugo Ramirez, Laura Valenzuela, Ricardo Diaz
+Adrian Trujillo, Ricardo Diaz

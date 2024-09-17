@@ -25,43 +25,39 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
-    - name: Install poetry
-      run: |
-        pip install poetry
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
 
     - name: Install dependencies
       run: |
-        make dependencies
+        make dependencies_ci
+
+    - name: Pull Raw Data
+      run: |
+        source $(poetry env info --path)/bin/activate
+        make pull_raw_data
 
     - name: Run Pipeline
+      env:
+        MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+        MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
       run: |
+        source $(poetry env info --path)/bin/activate
         make run_pipeline_ci
 
-    - name: Read Results
-      id: results
-      uses: jaywcjlove/github-action-read-file@main
-      with:
-        path: data/final/results.txt
-
-    - name: Comment Results on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const output = `
-          #### MLOps Pipeline Execution 🚀\
-          `${{ steps.results.outputs.content }}\`
-          *Pushed by: @${{ github.actor }}*`;
-
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: output
-          })
+    - name: Push Results
+      if: github.event_name == 'push'
+      run: |
+        source $(poetry env info --path)/bin/activate
+        make upload_results

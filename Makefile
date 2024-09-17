@@ -7,19 +7,27 @@ dependencies:
 	poetry install
 	poetry run pre-commit install
 
-dependencies:
-	@echo "Installing dependencies..."
-	poetry install
-
 run_pipeline:
 	@echo "Running pipeline..."
 	export MLFLOW_RUN_ID=`python src/utils/start_pipeline.py --run_name=$(RUN_NAME)`; \
 	dvc repro
 
+dependencies_ci:
+	@echo "Installing dependencies..."
+	poetry install
+
 run_pipeline_ci:
 	@echo "Running pipeline..."
-	export MLFLOW_RUN_ID=`python src/utils/start_pipeline.py --run_name=ci_run_github`; \
-	dvc repro --no-run-cache
+	export MLFLOW_RUN_ID=`python src/utils/start_pipeline.py --run_name=`; \
+	dvc repro
+
+pull_raw_data:
+	@echo "Pulling raw data..."
+	dvc pull data/raw/online_retail_raw.csv
+
+upload_results:
+	@echo "Uploading results..."
+	python src/utils/upload_results.py
 
 env: dependencies
 	@echo "Activating virtual environment..."

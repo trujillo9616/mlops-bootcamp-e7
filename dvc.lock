@@ -4,8 +4,8 @@ stages:
     cmd: python -m src.stages.data_prepare --config=params.yaml
     deps:
     - path: src/stages/data_prepare.py
-      md5: 296ee5b203bf46b844b447d1d7b98205
-      size: 1106
+      md5: 07ebf20ca5183c2931e97ace4a385dfb
+      size: 1107
     params:
       params.yaml:
         base:
@@ -26,8 +26,8 @@ stages:
       md5: 6c7b987e0be51e0706c93f544b6d84d2
       size: 33105281
     - path: src/stages/featurize.py
-      md5: 2c41773677e4fa3bbe5b9bd2dc57ee90
-      size: 3841
+      md5: c49daf1f66828d33e0f47b6fac7e3d63
+      size: 3905
     params:
       params.yaml:
         base:
@@ -84,8 +84,8 @@ stages:
       md5: e1388dfdd29210425abdbd217ff3dd36
       size: 227890
     - path: src/stages/data_scaling.py
-      md5: 07bd31f165b85cf33f4dd7fbabfb76ba
-      size: 2014
+      md5: 0d2f92f84a82cebc12d6fa7984d7045c
+      size: 2029
     params:
       params.yaml:
         base:
@@ -107,8 +107,8 @@ stages:
       md5: 83fff7890b35bcc84c14d9226ee05198
       size: 255704
     - path: src/stages/train.py
-      md5: 0a3e25fedf3111b402f75ea6595a679d
-      size: 3874
+      md5: 07cdd7acd6ae061ec313cc2c2f4a758d
+      size: 3936
     params:
       params.yaml:
         base:
@@ -132,7 +132,7 @@ stages:
           max_iter: 1000
     outs:
     - path: models/model.pkl
-      md5: 8b286d9588bd95818bce9815b31665dd
+      md5: 878ca79576e46869ade4caf3e8786b30
       size: 18511
   evaluate:
     cmd: python -m src.stages.evaluate --config=params.yaml
@@ -144,11 +144,11 @@ stages:
       md5: 83fff7890b35bcc84c14d9226ee05198
       size: 255704
     - path: models/model.pkl
-      md5: 8b286d9588bd95818bce9815b31665dd
+      md5: 878ca79576e46869ade4caf3e8786b30
       size: 18511
     - path: src/stages/evaluate.py
-      md5: 3319142c463feb6c5374684a2096aa3a
-      size: 2414
+      md5: e6c8f6799564f858279740d8f696dc9b
+      size: 2491
     params:
       params.yaml:
         base:
