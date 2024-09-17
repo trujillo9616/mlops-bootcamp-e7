@@ -2,7 +2,7 @@
 
 Proyecto con implementacion End-to-End de un pipeline de MLOps
 
-By: Adrian Trujillo, Hugo Ramirez, Laura Valenzuela, Ricardo Diaz
+By: Adrian Trujillo, Ricardo Diaz
 
 ## Project Structure
 ```bash
