@@ -55,3 +55,9 @@ jobs:
       run: |
         source $(poetry env info --path)/bin/activate
         make run_pipeline_ci
+
+    - name: Push Results
+      if: github.event_name == 'push'
+      run: |
+        source $(poetry env info --path)/bin/activate
+        make upload_results

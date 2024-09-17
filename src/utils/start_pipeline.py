@@ -9,6 +9,7 @@ def start_pipeline(run_name):
     with mlflow.start_run(run_name=run_name):
         print(mlflow.active_run().info.run_id)
         mlflow.log_artifact("dvc.yaml")
+        mlflow.log_artifact("params.yaml")
 
 
 if __name__ == "__main__":

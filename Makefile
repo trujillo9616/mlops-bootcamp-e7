@@ -25,6 +25,10 @@ pull_raw_data:
 	@echo "Pulling raw data..."
 	dvc pull data/raw/online_retail_raw.csv
 
+upload_results:
+	@echo "Uploading results..."
+	python src/utils/upload_results.py
+
 env: dependencies
 	@echo "Activating virtual environment..."
 	poetry shell
