@@ -107,6 +107,10 @@ Pre-commit hooks are a set of actions that are executed before a commit is made.
 pre-commit install
 ```
 
+### Dagshub & MLFlow 🐾🌊
+
+To track the experiments of this repository, we decided to use Dagshub because it offers a MLFlow server that we can send our experiment data and store our models. You can check it out [here](https://dagshub.com/trujillo9616/mlops-bootcamp-e7)
+
 ## Contact info
 
 Adrian Trujillo, Ricardo Diaz
