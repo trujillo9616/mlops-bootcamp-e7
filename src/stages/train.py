@@ -57,6 +57,11 @@ def train_model(config_path: Text) -> None:
     model_path = config["train"]["model_path"]
     joblib.dump(model, model_path)
     mlflow.log_artifacts("models", artifact_path="model.pkl")
+    mlflow.sklearn.log_model(
+        sk_model=model,
+        artifact_path="models/model.pkl",
+        registered_model_name="online_retail_model",
+    )
 
     # # get centroids
     # centroids = kmeans.cluster_centers_
